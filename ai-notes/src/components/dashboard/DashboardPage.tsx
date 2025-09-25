@@ -3,24 +3,43 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getNotes, getTodos } from '@/lib/storage';
+import { OlympicRings } from '@/components/ui/olympic-rings';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export function DashboardPage() {
   const [noteCount, setNoteCount] = useState(0);
   const [todoStats, setTodoStats] = useState({ total: 0, completed: 0, pending: 0 });
   const [currentDate, setCurrentDate] = useState('');
+  const [projectCount, setProjectCount] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const updateStats = () => {
       const notes = getNotes();
       const todos = getTodos();
-      
+
       setNoteCount(notes.length);
       setTodoStats({
         total: todos.length,
         completed: todos.filter(t => t.completed).length,
         pending: todos.filter(t => !t.completed).length
       });
-      
+
+      // 获取项目数量
+      try {
+        const projectsData = localStorage.getItem('projects');
+        if (projectsData) {
+          const projects = JSON.parse(projectsData);
+          setProjectCount(projects.length);
+        } else {
+          setProjectCount(0);
+        }
+      } catch (error) {
+        console.error('获取项目数量失败:', error);
+        setProjectCount(0);
+      }
+
       const now = new Date();
       const dateStr = now.toLocaleDateString('zh-CN', {
         year: 'numeric',
@@ -34,7 +53,7 @@ export function DashboardPage() {
     };
 
     updateStats();
-    
+
     // Listen for storage changes
     window.addEventListener('storage', updateStats);
     return () => window.removeEventListener('storage', updateStats);
@@ -91,6 +110,63 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* 五环项目展示区域 */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-lg">项目管理中心</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            {/* 五环动画 */}
+            <div className="flex-shrink-0">
+              <OlympicRings
+                size={180}
+                animated={true}
+                interactive={true}
+                onRingClick={(index) => {
+                  router.push('/projects');
+                }}
+              />
+            </div>
+
+            {/* 项目信息 */}
+            <div className="flex-1 text-center lg:text-left">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold mb-2">项目概览</h3>
+                  <p className="text-muted-foreground">
+                    当前共有 {projectCount} 个项目
+                  </p>
+                </div>
+
+                <div className="flex justify-center lg:justify-start gap-4">
+                  <Button
+                    onClick={() => router.push('/projects')}
+                    variant="default"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                  >
+                    管理项目
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      router.push('/projects');
+                      // 触发新建项目逻辑
+                      setTimeout(() => {
+                        const event = new CustomEvent('newProject');
+                        window.dispatchEvent(event);
+                      }, 100);
+                    }}
+                    variant="outline"
+                  >
+                    新建项目
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <Card>
