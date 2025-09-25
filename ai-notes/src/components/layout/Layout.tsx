@@ -9,6 +9,7 @@ import { TodosPage } from '@/components/todos/TodosPage';
 import { PomodoroPage } from '@/components/pomodoro/PomodoroPage';
 import { AIChatPage } from '@/components/ai-chat/AIChatPage';
 import { ProjectsPage } from '@/components/projects/ProjectsPage';
+import { BackgroundPaths } from '@/components/ui/background-paths';
 
 export function Layout() {
   const [activeView, setActiveView] = useState<ActiveView>('dashboard');
@@ -33,10 +34,15 @@ export function Layout() {
   };
 
   return (
-    <div className="h-screen flex">
-      <Sidebar activeView={activeView} onViewChange={setActiveView} />
-      <div className="flex-1 bg-white dark:bg-neutral-950">
-        {renderContent()}
+    <div className="h-screen flex relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <BackgroundPaths title="AI Notes" />
+      </div>
+      <div className="relative z-10 flex w-full h-full">
+        <Sidebar activeView={activeView} onViewChange={setActiveView} />
+        <div className="flex-1 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );
