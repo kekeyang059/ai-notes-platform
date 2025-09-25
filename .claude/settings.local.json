@@ -17,7 +17,9 @@
       "Bash(git push:*)",
       "Bash(git config:*)",
       "Bash(echo:*)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
