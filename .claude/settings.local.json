@@ -18,8 +18,8 @@
       "Bash(git config:*)",
       "Bash(echo:*)",
       "Bash(git remote:*)",
-      "Bash(git merge:*)",
-      "Bash(git stash:*)"
+      "Bash(git revert:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
